@@ -21,13 +21,14 @@ enum Suits {
     Diamonds,
 }
 
+#[derive(Debug)]
 struct Card {
     suit: String,
     number: u32,
 }
 
 impl Card {
-    fn new(num: u32, suit: String) -> Card {
+    fn new(num: u32, suit: String) -> Self {
         Card {
             number: num,
             suit: suit,
@@ -35,16 +36,19 @@ impl Card {
     }
 }
 
+#[derive(Debug)]
 struct Deck {
-    card: Option<Card>,
-    amount: Option<u32>,
+    cards: Vec<Card>,
 }
 
 impl Deck {
-    fn build_deck(card: Option<Card>, amount: Option<u32>) -> Deck {
-        Deck {
-            card: card,
-            amount: amount,
+    fn add_card(&mut self, card: Card) {
+        let _ = &mut self.cards.push(card);
+    }
+
+    fn show_deck(&self) {
+        for c in &self.cards {
+            println!("{:?}", c);
         }
     }
 }
@@ -53,15 +57,12 @@ fn main() {
     let suits = vec!["Spades", "Hearts", "Clubs", "Diamonds"];
     let numbers = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
-    let deck = Deck {
-        card: None,
-        amount: None,
-    };
-    let mut amount = 0;
+    let mut deck = Deck { cards: Vec::new() };
     for suit in &suits {
         for num in &numbers {
-            *&mut amount += 1;
-            Deck::build_deck(Some(Card::new(*num, suit.to_string())), Some(amount));
+            let card = Card::new(*num, (&suit).to_string());
+            deck.add_card(card);
         }
     }
+    let _ = &mut deck.show_deck();
 }
