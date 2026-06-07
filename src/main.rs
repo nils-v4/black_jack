@@ -1,19 +1,17 @@
+use rand::prelude::*;
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
+
+#[derive(EnumIter, Debug, Clone)]
 enum FaceCards {
+    Value(u8),
     A,
     J,
     Q,
     K,
 }
 
-fn value_face_cards(facecard: FaceCards) -> u8 {
-    match facecard {
-        FaceCards::A => 1,
-        FaceCards::J => 11,
-        FaceCards::Q => 12,
-        FaceCards::K => 13,
-    }
-}
-
+#[derive(EnumIter, Debug, Clone)]
 enum Suits {
     Spades,
     Hearts,
@@ -23,15 +21,15 @@ enum Suits {
 
 #[derive(Debug)]
 struct Card {
-    suit: String,
-    number: u32,
+    number: FaceCards,
+    suit: Suits,
 }
 
 impl Card {
-    fn new(num: u32, suit: String) -> Self {
+    fn new(num: FaceCards, suit: &Suits) -> Self {
         Card {
-            number: num,
-            suit: suit,
+            number: num.clone(),
+            suit: suit.clone(),
         }
     }
 }
@@ -42,8 +40,25 @@ struct Deck {
 }
 
 impl Deck {
+    fn initialize(amount: u8) -> Self {
+        let mut deck = Deck { cards: Vec::new() };
+        for _ in 1..=amount {
+            for suit in Suits::iter() {
+                for num in [FaceCards::A, FaceCards::J, FaceCards::Q, FaceCards::K] {
+                    let card = Card::new(num, &suit);
+                    deck.add_card(card);
+                }
+                for num in (2..=10).map(|val| FaceCards::Value(val)) {
+                    let card = Card::new(num, &suit);
+                    deck.add_card(card);
+                }
+            }
+        }
+        return deck;
+    }
+
     fn add_card(&mut self, card: Card) {
-        let _ = &mut self.cards.push(card);
+        self.cards.push(card);
     }
 
     fn show_deck(&self) {
@@ -51,18 +66,24 @@ impl Deck {
             println!("{:?}", c);
         }
     }
+
+    fn shuffle(&mut self) {
+        let mut rng = rand::rng();
+        let len = self.cards.len();
+        for _c in 0..len {
+            self.cards
+                .swap(rng.random_range(0..len), rng.random_range(0..len));
+        }
+    }
+
+    fn count(&self) {
+        println!("{:?}", self.cards.len());
+    }
 }
 
 fn main() {
-    let suits = vec!["Spades", "Hearts", "Clubs", "Diamonds"];
-    let numbers = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-
-    let mut deck = Deck { cards: Vec::new() };
-    for suit in &suits {
-        for num in &numbers {
-            let card = Card::new(*num, (&suit).to_string());
-            deck.add_card(card);
-        }
-    }
-    let _ = &mut deck.show_deck();
+    let mut deck = Deck::initialize(1);
+    deck.shuffle();
+    deck.show_deck();
+    deck.count();
 }
