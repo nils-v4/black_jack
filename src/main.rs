@@ -1,6 +1,6 @@
 mod card;
 mod deck;
-//use card::*;
+mod player;
 use deck::*;
 
 fn main() {
@@ -8,4 +8,6 @@ fn main() {
     deck.shuffle();
     deck.show_deck();
     deck.count();
+    let card = deck.take_card();
+    card.to_string();
 }

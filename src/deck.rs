@@ -29,6 +29,10 @@ impl Deck {
         self.cards.push(card);
     }
 
+    pub fn take_card(&mut self) -> Card {
+        self.cards.pop().expect("no more cards left")
+    }
+
     pub fn show_deck(&self) {
         for c in &self.cards {
             println!("{:?}", c);

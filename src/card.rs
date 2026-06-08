@@ -30,4 +30,17 @@ impl Card {
             suit: suit.clone(),
         }
     }
+
+    pub fn to_string(&self) {
+        let symbol = match self.suit {
+            Suits::Diamonds => "♦",
+            Suits::Hearts => "♥",
+            Suits::Clubs => "♣",
+            Suits::Spades => "♠",
+        };
+        println!(
+            "|{:?}  |\n| {:?} |\n|  {:?}",
+            self.number, symbol, self.number
+        );
+    }
 }
