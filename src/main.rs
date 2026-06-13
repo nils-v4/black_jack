@@ -12,6 +12,8 @@ fn main() {
     let card = deck.take_card();
     card.to_string();
 
-    let mut input: u32;
-    std::io::stdin().read_line(&mut input);
+    let mut input = String::new();
+    std::io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read input");
 }

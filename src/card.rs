@@ -32,14 +32,17 @@ impl Card {
     }
 
     pub fn value_of_card(&self) -> u8 {
-        let value = match &self.number {
-            FaceCards::Value() => value,
+        match &self.number {
+            FaceCards::Value(val) => *val,
             FaceCards::A => 11,
             FaceCards::J => 10,
             FaceCards::Q => 10,
             FaceCards::K => 10,
-        };
-        value
+        }
+    }
+
+    pub fn is_ace(&self) -> bool {
+        matches!(self.number, FaceCards::A)
     }
 
     pub fn to_string(&self) {
