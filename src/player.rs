@@ -58,6 +58,15 @@ mod tests {
     }
 
     #[test]
+    fn test_player_take_card() {
+        let mut player = Player::new(String::from("Taylor"));
+        let mut deck = Deck::initialize(1);
+        assert_eq!(player.cards.len(), 0);
+        player.take_card(&mut deck);
+        assert_eq!(player.cards.len(), 1);
+    }
+
+    #[test]
     fn test_score_calculation_no_aces() {
         let mut player = Player::new(String::from("Taylor"));
         player

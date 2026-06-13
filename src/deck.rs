@@ -68,4 +68,12 @@ mod tests {
         let deck = Deck::initialize(2);
         assert_eq!(deck.count(), 104);
     }
+
+    #[test]
+    fn test_take_card() {
+        let mut deck = Deck::initialize(1);
+        let initial_count = deck.count();
+        let _card = deck.take_card();
+        assert_eq!(deck.count(), initial_count - 1);
+    }
 }
