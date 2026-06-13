@@ -31,6 +31,17 @@ impl Card {
         }
     }
 
+    pub fn value_of_card(&self) -> u8 {
+        let value = match &self.number {
+            FaceCards::Value() => value,
+            FaceCards::A => 11,
+            FaceCards::J => 10,
+            FaceCards::Q => 10,
+            FaceCards::K => 10,
+        };
+        value
+    }
+
     pub fn to_string(&self) {
         let symbol = match self.suit {
             Suits::Diamonds => "♦",

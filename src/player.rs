@@ -1,10 +1,17 @@
 use crate::card::*;
 use crate::deck::*;
 
+enum Action {
+    Hit,
+    Double,
+    Split,
+    Stand,
+}
+
 pub struct Player {
     name: String,
     money: i32,
-    cards: Vec<Option<Card>>,
+    cards: Vec<Card>,
 }
 
 impl Player {
@@ -12,14 +19,25 @@ impl Player {
         Player {
             name,
             money: 100,
-            cards: vec![None],
+            cards: Vec::new(),
         }
     }
 
-    // need to fix this Some(card) push,
     pub fn take_card(&mut self, deck: &mut Deck) {
         let card = deck.take_card();
-        self.cards.push(Some(card))
+        self.cards.push(card)
+    }
+
+    pub fn calculate_score(&self) -> u32 {
+        let mut score = 0;
+        let mut aces = 0;
+        for c in &self.cards {
+            if c.value_of_card() == 11 {
+                aces += 1;
+            }
+            score += c.value_of_card();
+        }
+        score
     }
 }
 
