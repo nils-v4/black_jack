@@ -1,10 +1,14 @@
 use crate::card::*;
 use crate::deck::*;
 
-enum Action {
+use strum_macros::EnumString;
+
+#[derive(Debug, PartialEq, EnumString)]
+#[strum(serialize_all = "lowercase")]
+pub enum Action {
     Hit,
-    Double,
-    Split,
+    // Double,
+    // Split,
     Stand,
 }
 
@@ -23,6 +27,20 @@ impl Player {
         }
     }
 
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn money(&self) -> i32 {
+        self.money
+    }
+
+    pub fn cards(&self) {
+        for c in &self.cards {
+            c.to_string();
+        }
+    }
+
     pub fn take_card(&mut self, deck: &mut Deck) {
         let card = deck.take_card();
         self.cards.push(card)
@@ -38,6 +56,15 @@ impl Player {
         }
 
         score
+    }
+
+    pub fn process(&mut self, action: Action, deck: &mut Deck) {
+        match action {
+            Action::Hit => self.take_card(deck),
+            // Action::Double => {}
+            // Action::Split => {}
+            Action::Stand => {}
+        }
     }
 }
 

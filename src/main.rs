@@ -1,31 +1,91 @@
 mod card;
+mod dealer;
 mod deck;
 mod player;
-//use dealer::*;
+use dealer::*;
 use deck::*;
 use player::*;
-use std::io::*;
 
 fn main() {
     let mut deck = Deck::initialize(1);
     deck.shuffle();
-    /*deck.show_deck();
-    deck.count();
-    let card = deck.take_card();
-    card.to_string();*/
 
-    //let dealer = Dealer::new();
-    let player1 = Player::new(String::from("nilsv"));
+    let mut dealer = Dealer::new();
+    let mut player1 = Player::new(String::from("nilsv"));
 
-    while true {
+    for _ in 1..=2 {
+        dealer.take_card(&mut deck);
+        player1.take_card(&mut deck);
+    }
+    show_game_state(&player1, &dealer);
+    loop {
+        println!("What are you going to do? hit / stand");
         let mut input = String::new();
         std::io::stdin()
             .read_line(&mut input)
             .expect("Failed to read input");
 
-        let action: String = match input.trim().parse() {
-            Ok(act) => act,
-            Err(_) => continue,
-        };
+        match input.to_lowercase().trim() {
+            "h" | "hit" => {
+                player1.process(Action::Hit, &mut deck);
+                if player1.calculate_score() > 21 {
+                    break;
+                }
+            }
+            "s" | "stand" => {
+                player1.process(Action::Stand, &mut deck);
+                break;
+            }
+            _ => continue,
+        }
+        show_game_state(&player1, &dealer);
+    }
+
+    if player1.calculate_score() <= 21 {
+        dealer.play(&mut deck);
+        show_game_state(&player1, &dealer);
+    } else {
+        show_game_state(&player1, &dealer);
+        println!("you busted");
+    }
+
+    match determine_winner(&player1, &dealer) {
+        GameResult::PlayerWin => println!("winner: {}", player1.name()),
+        GameResult::DealerWin => println!("winner: dealer"),
+        GameResult::Draw => println!("Draw!"),
+    }
+}
+
+fn show_game_state(player: &Player, dealer: &Dealer) {
+    println!("\n--- dealer hand ---");
+    println!("Score: {}", dealer.calculate_score());
+    dealer.cards();
+    println!("");
+    println!("\n--- {} hand ---", player.name());
+    println!("Score: {}", player.calculate_score());
+    player.cards();
+    println!("");
+}
+
+enum GameResult {
+    PlayerWin,
+    DealerWin,
+    Draw,
+}
+
+fn determine_winner(player: &Player, dealer: &Dealer) -> GameResult {
+    let player_score = player.calculate_score();
+    let dealer_score = dealer.calculate_score();
+
+    if player_score > 21 {
+        GameResult::DealerWin
+    } else if dealer_score > 21 {
+        GameResult::PlayerWin
+    } else if player_score > dealer_score {
+        GameResult::PlayerWin
+    } else if dealer_score > player_score {
+        GameResult::DealerWin
+    } else {
+        GameResult::Draw
     }
 }
