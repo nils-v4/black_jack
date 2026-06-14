@@ -52,10 +52,18 @@ impl Card {
             Suits::Clubs => "♣",
             Suits::Spades => "♠",
         };
-        println!(
-            "|{:?}  |\n| {:?} |\n|  {:?}",
-            self.number, symbol, self.number
-        );
+        let val_str = match &self.number {
+            FaceCards::Value(val) => val.to_string(),
+            FaceCards::A => "A".to_string(),
+            FaceCards::J => "J".to_string(),
+            FaceCards::Q => "Q".to_string(),
+            FaceCards::K => "K".to_string(),
+        };
+        println!("┌─────────┐");
+        println!("│ {:<2}      │", val_str);
+        println!("│    {}    │", symbol);
+        println!("│      {:>2} │", val_str);
+        println!("└─────────┘");
     }
 }
 
