@@ -11,7 +11,13 @@ fn main() {
     deck.shuffle();
 
     let mut dealer = Dealer::new();
-    let mut player1 = Player::new(String::from("nilsv"));
+
+    println!("Enter name:");
+    let mut input_name = String::new();
+    std::io::stdin()
+        .read_line(&mut input_name)
+        .expect("Failed to process name");
+    let mut player1 = Player::new(input_name.trim().to_string());
 
     for _ in 1..=2 {
         dealer.take_card(&mut deck);
