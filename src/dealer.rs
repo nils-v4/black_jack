@@ -10,9 +10,10 @@ impl Dealer {
         Dealer { cards: Vec::new() }
     }
 
-    pub fn cards(&self) {
-        for c in &self.cards {
-            c.to_string();
+    pub fn cards(&self, hide_card: bool) {
+        for (i, c) in self.cards.iter().enumerate() {
+            let is_hidden = hide_card && i == 1;
+            c.to_string(is_hidden);
         }
     }
 
@@ -21,9 +22,17 @@ impl Dealer {
         self.cards.push(card)
     }
 
-    pub fn calculate_score(&self) -> u32 {
-        let mut score: u32 = self.cards.iter().map(|c| c.value_of_card() as u32).sum();
-        let mut ace_count = self.cards.iter().filter(|c| c.is_ace()).count();
+    pub fn calculate_score(&self, hide_second: bool) -> u32 {
+        let cards_for_score_count = if hide_second && self.cards.len() >= 2 {
+            &self.cards[0..1]
+        } else {
+            &self.cards[..]
+        };
+        let mut score: u32 = cards_for_score_count
+            .iter()
+            .map(|c| c.value_of_card() as u32)
+            .sum();
+        let mut ace_count = cards_for_score_count.iter().filter(|c| c.is_ace()).count();
 
         while score > 21 && ace_count > 0 {
             score -= 10;
@@ -34,7 +43,7 @@ impl Dealer {
     }
 
     pub fn play(&mut self, deck: &mut Deck) {
-        while self.calculate_score() < 17 {
+        while self.calculate_score(false) < 17 {
             self.take_card(deck);
         }
     }

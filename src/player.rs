@@ -40,7 +40,7 @@ impl Player {
 
     pub fn cards(&self) {
         for c in &self.cards {
-            c.to_string();
+            c.to_string(false);
         }
     }
 

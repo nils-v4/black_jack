@@ -45,7 +45,7 @@ impl Card {
         matches!(self.number, FaceCards::A)
     }
 
-    pub fn to_string(&self) {
+    pub fn to_string(&self, is_hidden: bool) {
         let symbol = match self.suit {
             Suits::Diamonds => "♦",
             Suits::Hearts => "♥",
@@ -59,11 +59,19 @@ impl Card {
             FaceCards::Q => "Q".to_string(),
             FaceCards::K => "K".to_string(),
         };
-        println!("┌─────────┐");
-        println!("│ {:<2}      │", val_str);
-        println!("│    {}    │", symbol);
-        println!("│      {:>2} │", val_str);
-        println!("└─────────┘");
+        if is_hidden {
+            println!("┌─────────┐");
+            println!("│ ?       │");
+            println!("│    ?    │");
+            println!("│       ? │");
+            println!("└─────────┘");
+        } else {
+            println!("┌─────────┐");
+            println!("│ {:<2}      │", val_str);
+            println!("│    {}    │", symbol);
+            println!("│      {:>2} │", val_str);
+            println!("└─────────┘");
+        }
     }
 }
 

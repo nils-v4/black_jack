@@ -21,19 +21,35 @@ fn main() {
 
     loop {
         std::process::Command::new("clear").status().ok();
-        println!("Enter bet: (current amount is {})", player1.money());
-        let mut input_bet = String::new();
-        std::io::stdin()
-            .read_line(&mut input_bet)
-            .expect("Failed to process bet");
+        loop {
+            println!("Enter bet: (current amount is {})", player1.money());
+            let mut input_bet = String::new();
+            std::io::stdin()
+                .read_line(&mut input_bet)
+                .expect("Failed to process bet");
 
-        player1.place_bet(input_bet.trim().parse::<u32>().expect("Failed to read bet"));
+            match input_bet.trim().parse::<u32>() {
+                Ok(amount) => {
+                    if amount == 0 {
+                        println!("amount must be greater than 0");
+                    } else if amount > player1.money() {
+                        println!("you dont have enough for that");
+                    } else {
+                        player1.place_bet(amount);
+                        break;
+                    }
+                }
+                Err(_) => {
+                    println!("invalid input");
+                }
+            }
+        }
 
         for _ in 1..=2 {
             dealer.take_card(&mut deck);
             player1.take_card(&mut deck);
         }
-        show_game_state(&player1, &dealer);
+        show_game_state(&player1, &dealer, true);
         loop {
             println!("What are you going to do? hit / stand");
             let mut input = String::new();
@@ -54,14 +70,14 @@ fn main() {
                 }
                 _ => continue,
             }
-            show_game_state(&player1, &dealer);
+            show_game_state(&player1, &dealer, false);
         }
 
         if player1.calculate_score() <= 21 {
             dealer.play(&mut deck);
-            show_game_state(&player1, &dealer);
+            show_game_state(&player1, &dealer, false);
         } else {
-            show_game_state(&player1, &dealer);
+            show_game_state(&player1, &dealer, false);
             println!("you busted");
         }
 
@@ -90,11 +106,11 @@ fn main() {
     }
 }
 
-fn show_game_state(player: &Player, dealer: &Dealer) {
+fn show_game_state(player: &Player, dealer: &Dealer, hide_dealer_card: bool) {
     std::process::Command::new("clear").status().ok();
     println!("\n--- dealer hand ---");
-    println!("Score: {}", dealer.calculate_score());
-    dealer.cards();
+    println!("Score: {}", dealer.calculate_score(hide_dealer_card));
+    dealer.cards(hide_dealer_card);
     println!("");
     println!(
         "\n--- {} hand --- money: {} ---",
@@ -114,7 +130,7 @@ pub enum GameResult {
 
 fn determine_winner(player: &Player, dealer: &Dealer) -> GameResult {
     let player_score = player.calculate_score();
-    let dealer_score = dealer.calculate_score();
+    let dealer_score = dealer.calculate_score(false);
 
     if player_score > 21 {
         GameResult::DealerWin
