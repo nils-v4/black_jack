@@ -19,46 +19,57 @@ fn main() {
         .expect("Failed to process name");
     let mut player1 = Player::new(input_name.trim().to_string());
 
-    for _ in 1..=2 {
-        dealer.take_card(&mut deck);
-        player1.take_card(&mut deck);
-    }
-    show_game_state(&player1, &dealer);
     loop {
-        println!("What are you going to do? hit / stand");
-        let mut input = String::new();
+        println!("Enter bet:");
+        let mut input_bet = String::new();
         std::io::stdin()
-            .read_line(&mut input)
-            .expect("Failed to read input");
+            .read_line(&mut input_bet)
+            .expect("Failed to process bet");
 
-        match input.to_lowercase().trim() {
-            "h" | "hit" => {
-                player1.process(Action::Hit, &mut deck);
-                if player1.calculate_score() > 21 {
-                    break;
-                }
-            }
-            "s" | "stand" => {
-                player1.process(Action::Stand, &mut deck);
-                break;
-            }
-            _ => continue,
+        for _ in 1..=2 {
+            dealer.take_card(&mut deck);
+            player1.take_card(&mut deck);
         }
         show_game_state(&player1, &dealer);
-    }
+        loop {
+            println!("What are you going to do? hit / stand");
+            let mut input = String::new();
+            std::io::stdin()
+                .read_line(&mut input)
+                .expect("Failed to read input");
 
-    if player1.calculate_score() <= 21 {
-        dealer.play(&mut deck);
-        show_game_state(&player1, &dealer);
-    } else {
-        show_game_state(&player1, &dealer);
-        println!("you busted");
-    }
+            match input.to_lowercase().trim() {
+                "h" | "hit" => {
+                    player1.process(Action::Hit, &mut deck);
+                    if player1.calculate_score() > 21 {
+                        break;
+                    }
+                }
+                "s" | "stand" => {
+                    player1.process(Action::Stand, &mut deck);
+                    break;
+                }
+                _ => continue,
+            }
+            show_game_state(&player1, &dealer);
+        }
 
-    match determine_winner(&player1, &dealer) {
-        GameResult::PlayerWin => println!("winner: {}", player1.name()),
-        GameResult::DealerWin => println!("winner: dealer"),
-        GameResult::Draw => println!("Draw!"),
+        if player1.calculate_score() <= 21 {
+            dealer.play(&mut deck);
+            show_game_state(&player1, &dealer);
+        } else {
+            show_game_state(&player1, &dealer);
+            println!("you busted");
+        }
+
+        match determine_winner(&player1, &dealer) {
+            GameResult::PlayerWin => println!("winner: {}", player1.name()),
+            GameResult::DealerWin => println!("winner: dealer"),
+            GameResult::Draw => println!("Draw!"),
+        }
+
+        player1.clear_hand();
+        dealer.clear_hand();
     }
 }
 
@@ -67,7 +78,11 @@ fn show_game_state(player: &Player, dealer: &Dealer) {
     println!("Score: {}", dealer.calculate_score());
     dealer.cards();
     println!("");
-    println!("\n--- {} hand ---", player.name());
+    println!(
+        "\n--- {} hand --- money: {} ---",
+        player.name(),
+        player.money()
+    );
     println!("Score: {}", player.calculate_score());
     player.cards();
     println!("");

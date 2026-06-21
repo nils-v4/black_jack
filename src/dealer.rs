@@ -38,6 +38,10 @@ impl Dealer {
             self.take_card(deck);
         }
     }
+
+    pub fn clear_hand(&mut self) {
+        self.cards = Vec::new()
+    }
 }
 
 #[cfg(test)]

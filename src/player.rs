@@ -66,6 +66,10 @@ impl Player {
             Action::Stand => {}
         }
     }
+
+    pub fn clear_hand(&mut self) {
+        self.cards = Vec::new()
+    }
 }
 
 #[cfg(test)]
