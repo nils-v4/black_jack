@@ -70,7 +70,7 @@ fn main() {
                 }
                 _ => continue,
             }
-            show_game_state(&player1, &dealer, false);
+            show_game_state(&player1, &dealer, true);
         }
 
         if player1.calculate_score() <= 21 {
