@@ -1,3 +1,4 @@
+use crate::GameResult;
 use crate::card::*;
 use crate::deck::*;
 
@@ -14,8 +15,9 @@ pub enum Action {
 
 pub struct Player {
     name: String,
-    money: i32,
+    money: u32,
     cards: Vec<Card>,
+    current_bet: u32,
 }
 
 impl Player {
@@ -24,6 +26,7 @@ impl Player {
             name,
             money: 100,
             cards: Vec::new(),
+            current_bet: 0,
         }
     }
 
@@ -31,7 +34,7 @@ impl Player {
         &self.name
     }
 
-    pub fn money(&self) -> i32 {
+    pub fn money(&self) -> u32 {
         self.money
     }
 
@@ -69,6 +72,20 @@ impl Player {
 
     pub fn clear_hand(&mut self) {
         self.cards = Vec::new()
+    }
+
+    pub fn place_bet(&mut self, amount: u32) {
+        self.current_bet = amount;
+        self.money -= self.current_bet;
+    }
+
+    pub fn settle_bet(&mut self, result: GameResult) {
+        match result {
+            GameResult::PlayerWin => self.money += self.current_bet * 2,
+            GameResult::Draw => self.money += self.current_bet,
+            GameResult::DealerWin => (),
+        }
+        self.current_bet = 0;
     }
 }
 

@@ -20,11 +20,14 @@ fn main() {
     let mut player1 = Player::new(input_name.trim().to_string());
 
     loop {
-        println!("Enter bet:");
+        std::process::Command::new("clear").status().ok();
+        println!("Enter bet: (current amount is {})", player1.money());
         let mut input_bet = String::new();
         std::io::stdin()
             .read_line(&mut input_bet)
             .expect("Failed to process bet");
+
+        player1.place_bet(input_bet.trim().parse::<u32>().expect("Failed to read bet"));
 
         for _ in 1..=2 {
             dealer.take_card(&mut deck);
@@ -62,18 +65,33 @@ fn main() {
             println!("you busted");
         }
 
-        match determine_winner(&player1, &dealer) {
+        let result = determine_winner(&player1, &dealer);
+        match &result {
             GameResult::PlayerWin => println!("winner: {}", player1.name()),
             GameResult::DealerWin => println!("winner: dealer"),
             GameResult::Draw => println!("Draw!"),
         }
+        player1.settle_bet(result);
 
         player1.clear_hand();
         dealer.clear_hand();
+
+        println!("Current money is: {}", player1.money());
+
+        if player1.money() <= 0 {
+            println!("You are out of money and are getting kicked out of the casino!");
+            break;
+        }
+        println!("\nPress Enter to start next round...");
+        let mut next_round = String::new();
+        std::io::stdin()
+            .read_line(&mut next_round)
+            .expect("failed to read input");
     }
 }
 
 fn show_game_state(player: &Player, dealer: &Dealer) {
+    std::process::Command::new("clear").status().ok();
     println!("\n--- dealer hand ---");
     println!("Score: {}", dealer.calculate_score());
     dealer.cards();
@@ -88,7 +106,7 @@ fn show_game_state(player: &Player, dealer: &Dealer) {
     println!("");
 }
 
-enum GameResult {
+pub enum GameResult {
     PlayerWin,
     DealerWin,
     Draw,
