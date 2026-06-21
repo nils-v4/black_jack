@@ -61,7 +61,8 @@ mod tests {
     fn test_new() {
         let dealer = Dealer::new();
         assert_eq!(dealer.cards.len(), 0);
-        assert_eq!(dealer.calculate_score(), 0);
+        assert_eq!(dealer.calculate_score(false), 0);
+        assert_eq!(dealer.calculate_score(true), 0);
     }
 
     #[test]
@@ -80,7 +81,8 @@ mod tests {
             .cards
             .push(Card::new(FaceCards::Value(10), &Suits::Hearts));
         dealer.cards.push(Card::new(FaceCards::K, &Suits::Spades));
-        assert_eq!(dealer.calculate_score(), 20);
+        assert_eq!(dealer.calculate_score(false), 20);
+        assert_eq!(dealer.calculate_score(true), 10);
     }
 
     #[test]
@@ -90,7 +92,8 @@ mod tests {
             .cards
             .push(Card::new(FaceCards::Value(6), &Suits::Hearts));
         dealer.cards.push(Card::new(FaceCards::A, &Suits::Spades));
-        assert_eq!(dealer.calculate_score(), 17);
+        assert_eq!(dealer.calculate_score(false), 17);
+        assert_eq!(dealer.calculate_score(true), 6);
     }
 
     #[test]
@@ -103,7 +106,8 @@ mod tests {
             .cards
             .push(Card::new(FaceCards::Value(5), &Suits::Clubs));
         dealer.cards.push(Card::new(FaceCards::A, &Suits::Spades));
-        assert_eq!(dealer.calculate_score(), 16);
+        assert_eq!(dealer.calculate_score(false), 16);
+        assert_eq!(dealer.calculate_score(true), 10);
     }
 
     #[test]
@@ -111,7 +115,8 @@ mod tests {
         let mut dealer = Dealer::new();
         dealer.cards.push(Card::new(FaceCards::A, &Suits::Hearts));
         dealer.cards.push(Card::new(FaceCards::A, &Suits::Spades));
-        assert_eq!(dealer.calculate_score(), 12);
+        assert_eq!(dealer.calculate_score(false), 12);
+        assert_eq!(dealer.calculate_score(true), 11);
     }
 
     #[test]
@@ -119,6 +124,6 @@ mod tests {
         let mut dealer = Dealer::new();
         let mut deck = Deck::initialize(1);
         dealer.play(&mut deck);
-        assert!(dealer.calculate_score() >= 17);
+        assert!(dealer.calculate_score(false) >= 17);
     }
 }
